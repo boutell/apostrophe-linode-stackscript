@@ -2,6 +2,8 @@
 #<UDF name="password" label="A password for the non-root user, nodeapps, used for deployment.">
 # PASSWORD=
 
+exec >/root/stackscript.log 2>&1
+
 user=nodeapps
 
 useradd $user -m -s /bin/bash
@@ -16,6 +18,7 @@ echo
 
 mkdir -p /opt &&
 cd /opt &&
+yum install -y git &&
 git clone https://github.com/punkave/stagecoach &&
 mkdir -p /opt/stagecoach/apps &&
 chown -R nodeapps.nodeapps /opt/stagecoach/apps &&
@@ -43,7 +46,7 @@ systemctl start nginx.service
 # On reboot
 systemctl enable nginx.service
 
-echo "Adding requirements for compiling C++ nodejs extensions and processing images" &&
+echo "Adding tools for compiling C++ nodejs extensions and processing images" &&
 yum install -y gcc gcc-c++ automake autoconf libtool make ImageMagick &&
 ( curl -sL https://rpm.nodesource.com/setup_6.x | bash - ) &&
 yum install -y nodejs &&
@@ -53,7 +56,7 @@ echo "Installing MongoDB via the official mongodb repo" &&
 cat > /etc/yum.repos.d/mongodb-org-3.4.repo <<EOM
 [mongodb-org-3.4]
 name=MongoDB Repository
-baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/3.4/x86_64/
+baseurl=https://repo.mongodb.org/yum/redhat/7Server/mongodb-org/3.4/x86_64/
 gpgcheck=1
 enabled=1
 gpgkey=https://www.mongodb.org/static/pgp/server-3.4.asc
